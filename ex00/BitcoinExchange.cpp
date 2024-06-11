@@ -6,7 +6,7 @@
 /*   By: lgreau <lgreau@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 15:36:01 by lgreau            #+#    #+#             */
-/*   Updated: 2024/06/11 20:04:12 by lgreau           ###   ########.fr       */
+/*   Updated: 2024/06/11 20:14:24 by lgreau           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,11 @@ void	BitcoinExchange::calculate(std::string const &input_file_name)
 		exit(EXIT_FAILURE);
 	}
 
-	// Add empty file proteciton before reading
+	if (ifs.peek() == std::ifstream::traits_type::eof())
+	{
+		std::cerr << "Error: " << input_file_name << " is an empty file" << std::endl;
+		exit(EXIT_FAILURE);
+	}
 
 	std::string	line;
 	std::getline(ifs, line); // First line serves as header e.g: "date | rate"
@@ -72,16 +76,17 @@ void	BitcoinExchange::calculate(std::string const &input_file_name)
 		double	amount = std::strtod(amount_str.c_str(), NULL);
 		if (amount < 1.0 || amount > 100.0) continue;
 
-		std::cout	<< "Debug: " << line << std::endl
-					<< "  |- date   : " << date_str << std::endl
-					<< "  |- amount : " << amount_str << std::endl;
-		std::cout	<< std::endl;
-
 		closest = date_str;
 		if (this->_rates.find(date_str) == this->_rates.end())
 			closest = this->_find_closest_date(date_str);
 
-		std::cout << line << " x " << this->_rates[closest] << " => " << getFinalAmount(this->_rates[closest], amount) << std::endl;
+		std::cout	<< date_str << " | "
+					<< std::setw(10) << amount
+					<< "  x  "
+					<< std::setw(10) << this->_rates[closest]
+					<< "  =>  "
+					<< "\033[0;32m" << getFinalAmount(this->_rates[closest], amount) << "\033[0m"
+				<<std::endl;
 	}
 	ifs.close();
 }
@@ -110,15 +115,11 @@ std::string	BitcoinExchange::_find_closest_date(std::string input)
 				--year;
 				month = 12;
 			}
-			day = 31; // Get number of days in the corresponding month
+			day = 31;
 		}
 		tmp = dateToString(year, month, day);
-		std::cout << "Debug: " << tmp << std::endl;
 		if (this->_rates.find(tmp) != this->_rates.end())
-		{
-			std::cout << "\033[0;32m" << "Found: " << tmp << "\033[0m" << std::endl;
 			return tmp;
-		}
 	}
 }
 
