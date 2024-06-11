@@ -6,7 +6,7 @@
 /*   By: lgreau <lgreau@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 20:38:58 by lgreau            #+#    #+#             */
-/*   Updated: 2024/06/11 21:33:44 by lgreau           ###   ########.fr       */
+/*   Updated: 2024/06/11 21:59:41 by lgreau           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include <iostream>
 # include <stack>
 # include <sstream>
+# include <exception>
 
 class RPN
 {
