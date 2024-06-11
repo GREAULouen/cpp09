@@ -3,7 +3,7 @@ CPPFLAGS =	-Wall -Wextra -Werror -std=c++98
 
 OBJ_DIR  =	./objs
 
-NAME	 =	program
+NAME	 =	btc
 SRC		 =	main.cpp					\
 			BitcoinExchange.cpp
 OBJ		 =	$(addprefix $(OBJ_DIR)/, $(SRC:%.cpp=%.o))
