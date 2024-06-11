@@ -6,7 +6,7 @@
 /*   By: lgreau <lgreau@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 15:36:01 by lgreau            #+#    #+#             */
-/*   Updated: 2024/06/11 16:55:43 by lgreau           ###   ########.fr       */
+/*   Updated: 2024/06/11 16:58:21 by lgreau           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ void	BitcoinExchange::calculate(std::string const &input_file_name)
 	std::ifstream	ifs(input_file_name.c_str(), std::ifstream::in);
 
 	std::string	line;
-	std::getline(ifs, line); // First line serves as header : "date,exchange_rate"
+	std::getline(ifs, line); // First line serves as header : "date | rate"
 
 	size_t		sep = 0;
 	std::string	date;
