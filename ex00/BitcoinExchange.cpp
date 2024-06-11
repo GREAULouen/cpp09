@@ -6,7 +6,7 @@
 /*   By: lgreau <lgreau@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 15:36:01 by lgreau            #+#    #+#             */
-/*   Updated: 2024/06/11 16:16:33 by lgreau           ###   ########.fr       */
+/*   Updated: 2024/06/11 16:55:43 by lgreau           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ BitcoinExchange::BitcoinExchange()
 		comma = line.find(',', 0);
 		// Add date validation
 		if (this->_rates.find(trimSpaces(line.substr(0, comma))) == this->_rates.end())
-			this->_rates[trimSpaces(line.substr(0, comma))] = trimSpaces(line.substr(comma + 1, line.length() - comma - 1));
+			this->_rates[trimSpaces(line.substr(0, comma))] = trimSpaces(line.substr(comma + 1, line.length() - 1 - comma));
 	}
 }
 
@@ -39,9 +39,31 @@ BitcoinExchange &	BitcoinExchange::operator=(BitcoinExchange const &toAssign)
 	return *this;
 }
 
-void	BitcoinExchange::calculate(std::string const &input_file)
+void	BitcoinExchange::calculate(std::string const &input_file_name)
 {
-	(void)input_file;
+	std::ifstream	ifs(input_file_name.c_str(), std::ifstream::in);
+
+	std::string	line;
+	std::getline(ifs, line); // First line serves as header : "date,exchange_rate"
+
+	size_t		sep = 0;
+	std::string	date;
+	std::string	rate;
+	while (std::getline(ifs, line))
+	{
+		sep = line.find_first_of('|', 0);
+		if (sep == line.npos) continue;
+
+		date = trimSpaces(line.substr(0, sep));
+		rate = trimSpaces(line.substr(sep + 1, line.length() - 1 - sep));
+
+		std::cout	<< "Debug: " << line << std::endl
+					<< "  |- date: " << date << std::endl
+					<< "  |- rate: " << rate << std::endl
+					<< "  |- isDateValid: " << (isDateValid(date)?"\033[0;32mYes":"\033[0;31mNo") << "\033[0m" << std::endl;
+		std::cout	<< std::endl;
+
+	}
 }
 
 
@@ -55,7 +77,7 @@ std::string	trimSpaces(std::string input)
 	size_t	start = input.find_first_not_of(' ', 0);
 	size_t	end = input.find_last_not_of(' ', input.npos);
 
-	return (input.substr(start, end - start));
+	return (input.substr(start, end - start + 1));
 }
 
 
@@ -64,16 +86,29 @@ bool	isDateValid(std::string date)
 	size_t	first_sep = date.find_first_of('-', 0);
 	size_t	last_sep = date.find_last_of('-', date.npos);
 
-	// Oldest possible date: 2009-01-02
-	std::string	year = date.substr(0, first_sep);
-	std::string	month = date.substr(first_sep + 1, last_sep - first_sep);
-	std::string	day = date.substr(last_sep + 1, date.length() - last_sep - 1);
+	std::string	year_str = date.substr(0, first_sep);
+	std::string	month_str = date.substr(first_sep + 1, last_sep - first_sep - 1);
+	std::string	day_str = date.substr(last_sep + 1, date.length() - last_sep - 1);
 
-	std::cout	<< "Debug:" << std::endl
-				<< "  |- year: " << year << std::endl
-				<< "  |- month: " << month << std::endl
-				<< "  |- day: " << day << std::endl;
-	std::cout	<< std::endl;
+	if (year_str.length() > 4) return false;
+	if (month_str.length() > 2) return false;
+	if (day_str.length() > 2) return false;
+
+	size_t year = std::strtoul(year_str.c_str(), NULL, 10);
+	size_t month = std::strtoul(month_str.c_str(), NULL, 10);
+	size_t day = std::strtoul(day_str.c_str(), NULL, 10);
+
+	// Oldest possible date: 2009-01-02
+	if (year < 2009) return false;
+	if (year == 2009 && month == 1 && day == 1) return false;
+
+	if (month == 0 || month > 12) return false;
+
+	if (day > 31) return false;
+	if ((month == 2 || month == 4 || month == 6 || month == 9 || month == 11) && day > 30) return false;
+	if (year % 4 != 0 && month == 2 && day > 28) return false;
+	if (year % 4 == 0 && year % 100 == 0 && year % 400 != 0 && month == 2 && day > 28) return false;
+	if (year % 4 == 0 && month == 2 && day > 29) return false;
 
 	return true;
 }

@@ -6,7 +6,7 @@
 /*   By: lgreau <lgreau@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 15:24:56 by lgreau            #+#    #+#             */
-/*   Updated: 2024/06/11 16:15:54 by lgreau           ###   ########.fr       */
+/*   Updated: 2024/06/11 16:42:28 by lgreau           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # include <map>
 # include <string>
 # include <fstream>
+# include <sstream>
 
 class BitcoinExchange
 {
@@ -32,7 +33,7 @@ class BitcoinExchange
 
 		BitcoinExchange &	operator=(BitcoinExchange const &);
 
-		void	calculate(std::string const &input_file);
+		void	calculate(std::string const &input_file_name);
 };
 
 std::string	trimSpaces(std::string);
