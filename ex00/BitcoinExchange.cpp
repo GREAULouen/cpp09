@@ -6,7 +6,7 @@
 /*   By: lgreau <lgreau@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 15:36:01 by lgreau            #+#    #+#             */
-/*   Updated: 2024/06/11 17:35:19 by lgreau           ###   ########.fr       */
+/*   Updated: 2024/06/11 20:04:12 by lgreau           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,38 +43,100 @@ void	BitcoinExchange::calculate(std::string const &input_file_name)
 {
 	std::ifstream	ifs(input_file_name.c_str(), std::ifstream::in);
 
+	if (!ifs.is_open())
+	{
+		std::cerr << "Error: opening the file " << input_file_name << std::endl;
+		exit(EXIT_FAILURE);
+	}
+
+	// Add empty file proteciton before reading
+
 	std::string	line;
-	std::getline(ifs, line); // First line serves as header : "date | rate"
+	std::getline(ifs, line); // First line serves as header e.g: "date | rate"
 
 	size_t		sep = 0;
 	std::string	date_str;
-	std::string	rate_str;
+	std::string	amount_str;
+	std::string	closest;
 	while (std::getline(ifs, line))
 	{
 		sep = line.find_first_of('|', 0);
 		if (sep == line.npos) continue;
 
 		date_str = trimSpaces(line.substr(0, sep));
-		rate_str = trimSpaces(line.substr(sep + 1, line.length() - 1 - sep));
+		amount_str = trimSpaces(line.substr(sep + 1, line.length() - 1 - sep));
 
 		// Input validation
 		if (!isDateValid(date_str)) continue;
 
-		size_t	rate = std::strtoul(rate_str.c_str(), NULL, 10);
-		if (rate == 0 || rate > 100) continue;
+		double	amount = std::strtod(amount_str.c_str(), NULL);
+		if (amount < 1.0 || amount > 100.0) continue;
 
 		std::cout	<< "Debug: " << line << std::endl
-					<< "  |- date: " << date_str << std::endl
-					<< "  |- rate: " << rate_str << std::endl;
+					<< "  |- date   : " << date_str << std::endl
+					<< "  |- amount : " << amount_str << std::endl;
 		std::cout	<< std::endl;
+
+		closest = date_str;
+		if (this->_rates.find(date_str) == this->_rates.end())
+			closest = this->_find_closest_date(date_str);
+
+		std::cout << line << " x " << this->_rates[closest] << " => " << getFinalAmount(this->_rates[closest], amount) << std::endl;
+	}
+	ifs.close();
+}
+
+
+std::string	BitcoinExchange::_find_closest_date(std::string input)
+{
+	size_t	first_sep = input.find_first_of('-', 0);
+	size_t	last_sep = input.find_last_of('-', input.npos);
+
+	std::string	year_str = input.substr(0, first_sep);
+	std::string	month_str = input.substr(first_sep + 1, last_sep - first_sep - 1);
+	std::string	day_str = input.substr(last_sep + 1, input.length() - last_sep - 1);
+
+	size_t year = std::strtoul(year_str.c_str(), NULL, 10);
+	size_t month = std::strtoul(month_str.c_str(), NULL, 10);
+	size_t day = std::strtoul(day_str.c_str(), NULL, 10);
+
+	std::string	tmp;
+	while (true)
+	{
+		if (--day == 0)
+		{
+			if (--month == 0)
+			{
+				--year;
+				month = 12;
+			}
+			day = 31; // Get number of days in the corresponding month
+		}
+		tmp = dateToString(year, month, day);
+		std::cout << "Debug: " << tmp << std::endl;
+		if (this->_rates.find(tmp) != this->_rates.end())
+		{
+			std::cout << "\033[0;32m" << "Found: " << tmp << "\033[0m" << std::endl;
+			return tmp;
+		}
 	}
 }
 
 
 
-
 /*	~~~~~~~~~~~~~~~~ UTILS ~~~~~~~~~~~~~~~~	*/
 
+
+std::string	dateToString(size_t year, size_t month, size_t day)
+{
+	std::ostringstream	oss;
+
+	oss	<< year << "-"
+		<< month << "-"
+		<< day;
+
+	return oss.str();
+}
 
 std::string	trimSpaces(std::string input)
 {
@@ -115,4 +177,10 @@ bool	isDateValid(std::string date)
 	if (year % 4 == 0 && month == 2 && day > 29) return false;
 
 	return true;
+}
+
+double	getFinalAmount(std::string rate_str, double amount)
+{
+	double	rate = std::strtod(rate_str.c_str(), NULL);
+	return (rate * amount);
 }
