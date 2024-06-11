@@ -6,7 +6,7 @@
 /*   By: lgreau <lgreau@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 15:36:01 by lgreau            #+#    #+#             */
-/*   Updated: 2024/06/11 20:14:24 by lgreau           ###   ########.fr       */
+/*   Updated: 2024/06/11 20:18:00 by lgreau           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,14 +64,23 @@ void	BitcoinExchange::calculate(std::string const &input_file_name)
 	std::string	closest;
 	while (std::getline(ifs, line))
 	{
-		sep = line.find_first_of('|', 0);
-		if (sep == line.npos) continue;
+		sep = line.find_first_of('|', 0); // Date w/o amount
+		if (sep == line.npos){
+			std::cerr	<< "\033[0;31m" << date_str << "\033[0m"
+					<<std::endl;
+			continue;
+		}
 
 		date_str = trimSpaces(line.substr(0, sep));
 		amount_str = trimSpaces(line.substr(sep + 1, line.length() - 1 - sep));
 
 		// Input validation
-		if (!isDateValid(date_str)) continue;
+		if (!isDateValid(date_str)) // Invalid date (i.e: before 2009-01-02 OR impossible date)
+		{
+			std::cerr	<< "\033[0;31m" << date_str << "\033[0m"
+					<<std::endl;
+			continue;
+		}
 
 		double	amount = std::strtod(amount_str.c_str(), NULL);
 		if (amount < 1.0 || amount > 100.0) continue;
