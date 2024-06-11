@@ -6,7 +6,7 @@
 /*   By: lgreau <lgreau@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 15:36:01 by lgreau            #+#    #+#             */
-/*   Updated: 2024/06/11 16:58:21 by lgreau           ###   ########.fr       */
+/*   Updated: 2024/06/11 17:35:19 by lgreau           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,22 +47,26 @@ void	BitcoinExchange::calculate(std::string const &input_file_name)
 	std::getline(ifs, line); // First line serves as header : "date | rate"
 
 	size_t		sep = 0;
-	std::string	date;
-	std::string	rate;
+	std::string	date_str;
+	std::string	rate_str;
 	while (std::getline(ifs, line))
 	{
 		sep = line.find_first_of('|', 0);
 		if (sep == line.npos) continue;
 
-		date = trimSpaces(line.substr(0, sep));
-		rate = trimSpaces(line.substr(sep + 1, line.length() - 1 - sep));
+		date_str = trimSpaces(line.substr(0, sep));
+		rate_str = trimSpaces(line.substr(sep + 1, line.length() - 1 - sep));
+
+		// Input validation
+		if (!isDateValid(date_str)) continue;
+
+		size_t	rate = std::strtoul(rate_str.c_str(), NULL, 10);
+		if (rate == 0 || rate > 100) continue;
 
 		std::cout	<< "Debug: " << line << std::endl
-					<< "  |- date: " << date << std::endl
-					<< "  |- rate: " << rate << std::endl
-					<< "  |- isDateValid: " << (isDateValid(date)?"\033[0;32mYes":"\033[0;31mNo") << "\033[0m" << std::endl;
+					<< "  |- date: " << date_str << std::endl
+					<< "  |- rate: " << rate_str << std::endl;
 		std::cout	<< std::endl;
-
 	}
 }
 
