@@ -6,7 +6,7 @@
 /*   By: lgreau <lgreau@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 15:36:01 by lgreau            #+#    #+#             */
-/*   Updated: 2024/06/11 20:18:00 by lgreau           ###   ########.fr       */
+/*   Updated: 2024/06/11 20:37:27 by lgreau           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,8 +66,13 @@ void	BitcoinExchange::calculate(std::string const &input_file_name)
 	{
 		sep = line.find_first_of('|', 0); // Date w/o amount
 		if (sep == line.npos){
-			std::cerr	<< "\033[0;31m" << date_str << "\033[0m"
-					<<std::endl;
+			std::cerr	<< "\033[0;31m" << date_str
+						<< "   "	// '|' separator
+						<< std::setw(12) << ""
+						<< "     "	// 'x' separator
+						<< std::setw(12) << ""
+						<< "  =>  " << "Error: no bitcoin amount specified"
+					<< "\033[0m" <<std::endl;
 			continue;
 		}
 
@@ -77,22 +82,44 @@ void	BitcoinExchange::calculate(std::string const &input_file_name)
 		// Input validation
 		if (!isDateValid(date_str)) // Invalid date (i.e: before 2009-01-02 OR impossible date)
 		{
-			std::cerr	<< "\033[0;31m" << date_str << "\033[0m"
-					<<std::endl;
+			std::cerr	<< "\033[0;31m" << date_str
+						<< "   "	// '|' separator
+						<< "     "	// 'x' separator
+						<< std::setw(12) << ""
+						<< "  =>  " << "Error: invalid date"
+					<< "\033[0m" <<std::endl;
 			continue;
 		}
 
 		double	amount = std::strtod(amount_str.c_str(), NULL);
-		if (amount < 1.0 || amount > 100.0) continue;
+		if (amount < 0.0)
+		{
+			std::cerr	<< "\033[0;31m" << date_str << " | "
+						<< std::setw(12) << amount
+						<< "     "	// 'x' separator
+						<< std::setw(12) << ""
+						<< "  =>  " << "Error: Negative amount"
+					<< "\033[0m" <<std::endl;
+			continue;
+		} else if (amount > 100.0)
+		{
+			std::cerr	<< "\033[0;31m" << date_str << " | "
+						<< std::setw(12) << amount
+						<< "     "	// 'x' separator
+						<< std::setw(12) << ""
+						<< "  =>  " << "Error: Amount too big"
+					<< "\033[0m" <<std::endl;
+			continue;
+		}
 
 		closest = date_str;
 		if (this->_rates.find(date_str) == this->_rates.end())
 			closest = this->_find_closest_date(date_str);
 
 		std::cout	<< date_str << " | "
-					<< std::setw(10) << amount
+					<< std::setw(12) << amount
 					<< "  x  "
-					<< std::setw(10) << this->_rates[closest]
+					<< std::setw(12) << this->_rates[closest]
 					<< "  =>  "
 					<< "\033[0;32m" << getFinalAmount(this->_rates[closest], amount) << "\033[0m"
 				<<std::endl;
