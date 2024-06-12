@@ -6,7 +6,7 @@
 /*   By: lgreau <lgreau@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 14:22:09 by lgreau            #+#    #+#             */
-/*   Updated: 2024/06/12 17:19:48 by lgreau           ###   ########.fr       */
+/*   Updated: 2024/06/12 17:31:50 by lgreau           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,10 +38,17 @@ int	main(int argc, char *argv[])
 		std::list<int>		l = std::list<int>();
 		std::vector<int>	v = std::vector<int>();
 
-		int	tmp;
+		char	*end;
+		int		tmp;
 		for (int i = 1; i < argc; ++i)
 		{
-			tmp = static_cast<int>(std::strtol(argv[i], NULL, 10));
+			tmp = static_cast<int>(std::strtol(argv[i], &end, 10));
+			if (*end != '\0' || tmp < 0)
+			{
+				std::cerr	<< RED << "Error: invalid input: " << argv[i]
+						<< RESET << std::endl;
+				return 1;
+			}
 			l.push_back(tmp);
 			v.push_back(tmp);
 		}
@@ -66,8 +73,8 @@ int	main(int argc, char *argv[])
 
 		// List benchmark result output
 		std::cout	<< "Time to process a range of "
-					<< std::setw(8) << (argc - 1)
-					<< " elements with std::list<int>\t\t: "
+					<< GREEN << std::setw(8) << (argc - 1) << RESET
+					<< " elements with " << GREEN << "std::list<int>" << RESET << "   : "
 					<< std::setw(12) << std::fixed << GREEN << time_list << RESET
 					<< " us"
 				<< std::endl;
@@ -75,8 +82,8 @@ int	main(int argc, char *argv[])
 
 		// Vector benchmark result output
 		std::cout	<< "Time to process a range of "
-					<< std::setw(8) << (argc - 1)
-					<< " elements with std::vector<int>\t: "
+					<< GREEN << std::setw(8) << (argc - 1) << RESET
+					<< " elements with " << GREEN << "std::vector<int>" << RESET << " : "
 					<< std::setw(12) << std::fixed << GREEN << time_vector << RESET
 					<< " us"
 				<< std::endl;
