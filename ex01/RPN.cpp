@@ -6,7 +6,7 @@
 /*   By: lgreau <lgreau@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 20:44:56 by lgreau            #+#    #+#             */
-/*   Updated: 2024/06/11 22:02:09 by lgreau           ###   ########.fr       */
+/*   Updated: 2024/06/12 12:07:21 by lgreau           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,14 @@ RPN &	RPN::operator=(RPN const &toAssign)
 
 void	RPN::compute(std::string input)
 {
+	size_t	err_token = input.find_first_not_of(" 0123456789+-*/", 0);
+	if (err_token!= input.npos)
+	{
+		std::cerr	<< "\033[0;31m" << "Invalid input: '" << input.at(err_token) << "'"
+				<< "\033[0m" << std::endl;
+		exit(EXIT_FAILURE);
+	}
+
 	std::stringstream	ss(input, std::stringstream::in);
 	std::string	operators[4] = {"+", "-", "/", "*"};
 	int (*operations[4])(int, int) = {&rpn_add, &rpn_sub, &rpn_div, &rpn_mult};
@@ -86,7 +94,6 @@ void	RPN::compute(std::string input)
 
 
 /*	~~~~~~~~~~~~~~~~ UTILS ~~~~~~~~~~~~~~~~	*/
-
 
 int	which_of(std::string input, std::string *arr, int arr_size)
 {
