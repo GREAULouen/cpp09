@@ -6,7 +6,7 @@
 /*   By: lgreau <lgreau@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 20:44:56 by lgreau            #+#    #+#             */
-/*   Updated: 2024/06/12 12:20:22 by lgreau           ###   ########.fr       */
+/*   Updated: 2024/06/12 12:24:06 by lgreau           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void	RPN::compute(std::string input)
 	{
 		std::cerr	<< "\033[0;31m" << "Empty input"
 				<< "\033[0m" << std::endl;
-		exit(EXIT_FAILURE);
+		return ;
 	}
 
 	size_t	err_token = input.find_first_not_of(" 0123456789+-*/", 0);
@@ -38,7 +38,7 @@ void	RPN::compute(std::string input)
 	{
 		std::cerr	<< "\033[0;31m" << "Invalid input: '" << input.at(err_token) << "'"
 				<< "\033[0m" << std::endl;
-		exit(EXIT_FAILURE);
+		return ;
 	}
 
 	std::stringstream	ss(input, std::stringstream::in);
@@ -67,7 +67,7 @@ void	RPN::compute(std::string input)
 								<< " operand" << (((2 - this->_tokens.size()) > 1)?"s":"")
 								<< " to execute: " << operators[next_op]
 							<< "\033[0m" << std::endl;
-					exit(EXIT_FAILURE);
+					return ;
 				}
 
 				// Retrieve the first 2 operands from the stack
@@ -84,7 +84,7 @@ void	RPN::compute(std::string input)
 	} catch (std::exception &e) {
 		std::cerr	<< "\033[0;31m" << e.what()
 				<< "\033[0m" << std::endl;
-		exit(EXIT_FAILURE);
+		return ;
 	}
 
 	// Verify that there's no leftover operands
@@ -92,7 +92,7 @@ void	RPN::compute(std::string input)
 	{
 		std::cerr	<< "\033[0;31m" << "Error: too many operands: " << this->_tokens.size() - 1
 				<< "\033[0m" << std::endl;
-		exit(EXIT_FAILURE);
+		return ;
 	}
 
 	std::cout	<< " => Result: " << "\033[0;32m" << this->_tokens.top()

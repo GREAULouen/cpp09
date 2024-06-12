@@ -6,7 +6,7 @@
 /*   By: lgreau <lgreau@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 15:36:01 by lgreau            #+#    #+#             */
-/*   Updated: 2024/06/11 20:37:27 by lgreau           ###   ########.fr       */
+/*   Updated: 2024/06/12 12:23:57 by lgreau           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,13 +46,13 @@ void	BitcoinExchange::calculate(std::string const &input_file_name)
 	if (!ifs.is_open())
 	{
 		std::cerr << "Error: opening the file " << input_file_name << std::endl;
-		exit(EXIT_FAILURE);
+		return ;
 	}
 
 	if (ifs.peek() == std::ifstream::traits_type::eof())
 	{
 		std::cerr << "Error: " << input_file_name << " is an empty file" << std::endl;
-		exit(EXIT_FAILURE);
+		return ;
 	}
 
 	std::string	line;

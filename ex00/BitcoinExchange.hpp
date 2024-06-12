@@ -6,7 +6,7 @@
 /*   By: lgreau <lgreau@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 15:24:56 by lgreau            #+#    #+#             */
-/*   Updated: 2024/06/11 20:11:47 by lgreau           ###   ########.fr       */
+/*   Updated: 2024/06/12 12:25:14 by lgreau           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 # include <fstream>
 # include <sstream>
 # include <iomanip>
+# include <cstdlib>
 
 class BitcoinExchange
 {
