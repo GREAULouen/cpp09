@@ -6,7 +6,7 @@
 /*   By: lgreau <lgreau@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 20:44:56 by lgreau            #+#    #+#             */
-/*   Updated: 2024/06/12 12:07:21 by lgreau           ###   ########.fr       */
+/*   Updated: 2024/06/12 12:20:22 by lgreau           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,13 @@ RPN &	RPN::operator=(RPN const &toAssign)
 
 void	RPN::compute(std::string input)
 {
+	if (input.size() == 0)
+	{
+		std::cerr	<< "\033[0;31m" << "Empty input"
+				<< "\033[0m" << std::endl;
+		exit(EXIT_FAILURE);
+	}
+
 	size_t	err_token = input.find_first_not_of(" 0123456789+-*/", 0);
 	if (err_token!= input.npos)
 	{
@@ -88,7 +95,7 @@ void	RPN::compute(std::string input)
 		exit(EXIT_FAILURE);
 	}
 
-	std::cout	<< "\033[0;32m" << " => " << this->_tokens.top()
+	std::cout	<< " => Result: " << "\033[0;32m" << this->_tokens.top()
 			<< "\033[0m" << std::endl;
 }
 
