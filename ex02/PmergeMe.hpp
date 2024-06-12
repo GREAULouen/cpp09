@@ -6,7 +6,7 @@
 /*   By: lgreau <lgreau@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 14:09:14 by lgreau            #+#    #+#             */
-/*   Updated: 2024/06/12 16:01:41 by lgreau           ###   ########.fr       */
+/*   Updated: 2024/06/12 16:57:43 by lgreau           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,32 +34,6 @@ class PmergeMe
 		{
 			if (this == &toAssign) return *this;
 			return *this;
-		}
-
-
-	public:
-		static void	mi_sort(Container &input)
-		{
-			if (input.size() <= 1) return ;
-
-			// Step 1: Separate elements by pairs & put the small/large in separated containers
-			Container	small;
-			Container	large;
-			split_n_sort_pairs(input, small, large);
-
-			// Step 2: Sort the container w/ the large values RECURSIVELY
-			mi_sort(large);
-
-			// Step 3: Insert the elements from small Container back at their place in the large Container
-			//         Using a specific order
-			std::vector<typename Container::iterator> insertionOrder = getInsertionOrder(small);
-			for (size_t i = 0; i < insertionOrder.size(); ++i) {
-				typename Container::iterator pos = std::lower_bound(large.begin(), large.end(), *insertionOrder[i]);
-				large.insert(pos, *insertionOrder[i]);
-			}
-
-			// Step 4: Put the sorted values back into input Container
-			input.swap(large);
 		}
 
 		/*	~~~~~~~~~~~~~~~~ UTILS ~~~~~~~~~~~~~~~~	*/
@@ -141,6 +115,31 @@ class PmergeMe
 			}
 
 			return order;
+		}
+
+	public:
+		static void	mi_sort(Container &input)
+		{
+			if (input.size() <= 1) return ;
+
+			// Step 1: Separate elements by pairs & put the small/large in separated containers
+			Container	small;
+			Container	large;
+			split_n_sort_pairs(input, small, large);
+
+			// Step 2: Sort the container w/ the large values RECURSIVELY
+			mi_sort(large);
+
+			// Step 3: Insert the elements from small Container back at their place in the large Container
+			//         Using a specific order
+			std::vector<typename Container::iterator> insertionOrder = getInsertionOrder(small);
+			for (size_t i = 0; i < insertionOrder.size(); ++i) {
+				typename Container::iterator pos = std::lower_bound(large.begin(), large.end(), *insertionOrder[i]);
+				large.insert(pos, *insertionOrder[i]);
+			}
+
+			// Step 4: Put the sorted values back into input Container
+			input.swap(large);
 		}
 };
 

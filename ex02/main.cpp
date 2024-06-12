@@ -6,13 +6,14 @@
 /*   By: lgreau <lgreau@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 14:22:09 by lgreau            #+#    #+#             */
-/*   Updated: 2024/06/12 16:02:35 by lgreau           ###   ########.fr       */
+/*   Updated: 2024/06/12 17:06:32 by lgreau           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "PmergeMe.hpp"
 #include <list>
-#include <cstdlib>
+#include <iomanip>
+#include <sstream>
 #include <ctime>
 
 template<typename Container>
@@ -24,24 +25,36 @@ void	print(Container &a)
 	std::cout << std::endl;
 }
 
-int main(void)
+int	main(int argc, char *argv[])
 {
-	std::srand(time(NULL));
+	if (argc < 2)
 	{
-		std::list<int> list(500);
-		std::generate(list.begin(), list.end(), std::rand);
-
-		std::cout	<< "Before : " << ((std::is_sorted(list.begin(), list.end()))?GREEN:RED);
-		print<std::list<int> >(list);
-		std::cout	<< RESET;
-
-		PmergeMe<std::list<int> >::mi_sort(list);
-
-		std::cout	<< "After  : " << ((std::is_sorted(list.begin(), list.end()))?GREEN:RED);
-		print<std::list<int> >(list);
-		std::cout	<< RESET;
-
-		std::cout << "Debug: " << list.size() << " elements after mi_sort" << std::endl;
+		std::cerr	<< RED << "Error: The program requires at least 1 positive integer to perform the merge-insert sort on"
+				<< RESET << std::endl;
+		return 1;
 	}
+
+	{
+		std::list<int>		l = std::list<int>();
+		std::vector<int>	v = std::vector<int>();
+
+		int	tmp;
+		for (int i = 1; i < argc; ++i)
+		{
+			tmp = static_cast<int>(std::strtol(argv[i], NULL, 10));
+			l.push_back(tmp);
+			v.push_back(tmp);
+		}
+
+		std::cout << "Before : ";
+		print<std::list<int> >(l);
+
+		PmergeMe<std::list<int> >::mi_sort(l);
+		PmergeMe<std::vector<int> >::mi_sort(v);
+
+		std::cout << "After  : ";
+		print<std::list<int> >(l);
+	}
+
 	return 0;
 }
